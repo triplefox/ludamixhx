@@ -67,7 +67,7 @@ Graphics Asset Instancing System. This holds an object pool of common renderable
 
 ## painter
 
-This used to be "libpainter". It contains a set of algorithms for painting and pathfinding on a bitmap, and a structure for describing "paint tool state", making it possible to quickly build a feature-rich painting program. I will have to document it better sometime!
+This used to be "libpainter". It contains a set of algorithms for painting and pathfinding on a bitmap, and a structure for describing "paint tool state", making it possible to quickly build a feature-rich painting program. I have provided some orientation documentation in the library's subfolder.
 
 ## pixelbound
 
