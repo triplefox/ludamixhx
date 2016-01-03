@@ -6,7 +6,7 @@ class PaintState {
 	public var x : Float;
 	public var y : Float;
 	
-	public var brush : PaintResult; /* brush data to stroke with */
+	public var brush : DrawVector; /* brush data to stroke with */
 	public var program : PaintProgram; /* tool program to run */
 	public var color : Int; /* which color to draw with(if using a single color) */
 	public var button : Array<Bool>; /* tool button state */

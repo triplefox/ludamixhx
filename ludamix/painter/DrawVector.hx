@@ -2,7 +2,7 @@ package ludamix.painter;
 
 import haxe.ds.Vector;
 
-class PaintResult {
+class DrawVector {
 	public var data : Vector<Int>;
 	public var length : Int;
 	public function new() { data = new Vector(3); length = 0; }
@@ -23,17 +23,17 @@ class PaintResult {
 		length += 1;
 	}
 	public static function fromPairs(pairs : Array<Array<Int>>, color : Int) {
-		var pr = new PaintResult();
+		var pr = new DrawVector();
 		for (p in pairs) pr.push(p[0], p[1], color);
 		return pr;
 	}
 	public static function fromTriplets(triplets : Array<Array<Int>>) {
-		var pr = new PaintResult();
+		var pr = new DrawVector();
 		for (p in triplets) pr.push(p[0], p[1], p[2]);
 		return pr;
 	}
-	public function copy() : PaintResult {
-		var r = new PaintResult(); 
+	public function copy() : DrawVector {
+		var r = new DrawVector(); 
 		r.data = new Vector(data.length);
 		Vector.blit(data, 0, r.data, 0, r.data.length);
 		r.length = length; 
@@ -42,7 +42,7 @@ class PaintResult {
 	public function toString() : String {
 		return Std.string([for (i0 in 0...length) data[i0]]);
 	}
-	public function stroke(dest : PaintResult, brush : PaintResult, color : Int) {
+	public function stroke(dest : DrawVector, brush : DrawVector, color : Int) {
 		for (c0 in 0...length) {
 			var xr = data[c0 * 3]; var yr = data[c0 * 3 + 1];
 			for (v0 in 0...brush.length)

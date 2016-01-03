@@ -4,18 +4,18 @@ class Painter {
 	
 	public var paint : PaintState; /* program state that PaintProgram can retain between frames */
 	
-	public var result : PaintResult; /* list of points to return to the app this update */
-	public var preview : PaintResult; /* list of points to tell the app to preview this update */
+	public var result : DrawVector; /* list of points to return to the app this update */
+	public var preview : DrawVector; /* list of points to tell the app to preview this update */
 	
-	public var canvas : VectorCanvas; /* canonical persistent data of the image we're working on */
+	public var canvas : DrawCanvas; /* canonical persistent data of the image we're working on */
 	
 	public var complete : Bool; /* program finished in last update */
 	public var sync_canvas : Bool; /* request to sync current canvas state to application */
 	
-	public inline static function defaultBrushes() : Array <PaintResult> {
-		return [PaintResult.fromPairs([[0, 0]], 0xFFFFFFFF), 
-			PaintResult.fromPairs([[ -1, 0], [0, -1], [0, 0], [1, 0], [0, 1]], 0xFFFFFFFF),
-			PaintResult.fromPairs([[ -1, -1], [ -1, 0], [ -1, 1], [0, -1], [0, 0], [1, 0], [1, -1], [0, 1], [1, 1]], 0xFFFFFFFF),
+	public inline static function defaultBrushes() : Array <DrawVector> {
+		return [DrawVector.fromPairs([[0, 0]], 0xFFFFFFFF), 
+			DrawVector.fromPairs([[ -1, 0], [0, -1], [0, 0], [1, 0], [0, 1]], 0xFFFFFFFF),
+			DrawVector.fromPairs([[ -1, -1], [ -1, 0], [ -1, 1], [0, -1], [0, 0], [1, 0], [1, -1], [0, 1], [1, 1]], 0xFFFFFFFF),
 			];
 	}
 	
@@ -135,7 +135,7 @@ class Painter {
 				return !s0.button[0];
 			},
 			function(p0 : Painter, s0 : PaintState) { /* islands test */
-				var target : PaintResult;
+				var target : DrawVector;
 				if (!s0.button[0]) {
 					var islands = p0.canvas.getIslands();
 					trace(islands.paints.length);
@@ -146,7 +146,7 @@ class Painter {
 				return !s0.button[0];
 			},			
 			function(p0 : Painter, s0 : PaintState) { /* line */
-				var target : PaintResult;
+				var target : DrawVector;
 				if (s0.button[0]) target = p0.preview; else target = p0.result;
 				p0.preview.clear();
 				p0.drawLine(target, Std.int(p0.paint.x), Std.int(p0.paint.y), 
@@ -154,7 +154,7 @@ class Painter {
 				return !s0.button[0];
 			},			
 			function(p0 : Painter, s0 : PaintState) { /* rectangle */
-				var target : PaintResult;
+				var target : DrawVector;
 				if (s0.button[0]) target = p0.preview; else target = p0.result;
 				var x0 = Std.int(p0.paint.x);
 				var x1 = Std.int(s0.x);
@@ -167,7 +167,7 @@ class Painter {
 				return !s0.button[0];
 			},
 			function(p0 : Painter, s0 : PaintState) { /* circle */
-				var target : PaintResult;
+				var target : DrawVector;
 				if (s0.button[0]) target = p0.preview; else target = p0.result;
 				p0.preview.clear();
 				var r = distance(s0.x - p0.paint.x, s0.y - p0.paint.y); /* unify the x/y differentials */
@@ -177,7 +177,7 @@ class Painter {
 				return !s0.button[0];
 			},
 			function(p0 : Painter, s0 : PaintState) { /* ellipse */
-				var target : PaintResult;
+				var target : DrawVector;
 				if (s0.button[0]) target = p0.preview; else target = p0.result;
 				p0.preview.clear();
 				for (c0 in pointsToSegments(ellipse(p0.paint.x, s0.x, p0.paint.y, s0.y))) {
@@ -209,7 +209,7 @@ class Painter {
 				return !s0.button[0];
 			},
 			function(p0 : Painter, s0 : PaintState) : Bool { /* dijkstra path */
-				var target : PaintResult;
+				var target : DrawVector;
 				p0.preview.clear();
 				if (s0.button[0]) {
 					p0.drawLine(p0.preview, Std.int(p0.paint.x), Std.int(p0.paint.y), 
@@ -286,14 +286,14 @@ class Painter {
 	public function new() {
 		
 		paint = null;
-		result = new PaintResult();
-		preview = new PaintResult();
+		result = new DrawVector();
+		preview = new DrawVector();
 		complete = false;
 		sync_canvas = false;
 		
 	}
 	
-	public function drawLine(result : PaintResult, x0 : Int, y0 : Int, x1 : Int, y1 : Int, color : UInt) {
+	public function drawLine(result : DrawVector, x0 : Int, y0 : Int, x1 : Int, y1 : Int, color : UInt) {
 		var dist = Math.ceil(Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0))); /* diagonal distance (rounded up) */
 		if (dist < 1) dist = 1;
 		for (i0 in 0...dist) { /* draw interpolated dots along diagonal */
