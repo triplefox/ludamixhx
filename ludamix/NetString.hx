@@ -75,4 +75,18 @@ class NetString {
 		return '${s.length}:$s,';
 	}
 	
+	#if debug
+	public static function test() {
+		for (n in 0...100) {
+			var rnd = "";
+			for (i in 0...32) {
+				rnd += String.fromCharCode(Std.int(Math.random() * 256));
+			}
+			if (NetString.getAll(NetString.make(rnd))[0] != rnd)
+				throw "assertion failed: netstring implementation is bad: $rnd";
+		}
+	}
+	#end
+	
 }
+

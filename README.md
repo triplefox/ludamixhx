@@ -63,7 +63,7 @@ if (erec.intersect()) erec.pushoutTop();
 
 ## grassi
 
-Graphics Asset Instancing System. This holds an object pool of common renderable positioning data: x, y, z, type, index. It also sorts by z.
+Graphics Asset Instancing System. This holds an object pool of common renderable positioning data: x, y, z, type, index. It also sorts by z. There are two x and y positions in order to support interpolated rendering.
 
 ## painter
 
