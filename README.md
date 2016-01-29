@@ -65,6 +65,10 @@ if (erec.intersect()) erec.pushoutTop();
 
 Graphics Asset Instancing System. This holds an object pool of common renderable positioning data: x, y, z, type, index. It also sorts by z. There are two x and y positions in order to support interpolated rendering.
 
+## log
+
+A logging tool that efficiently stores events.
+
 ## painter
 
 This used to be "libpainter". It contains a set of algorithms for painting and pathfinding on a bitmap, and a structure for describing "paint tool state", making it possible to quickly build a feature-rich painting program. I have provided some orientation documentation in the library's subfolder.
