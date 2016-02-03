@@ -25,7 +25,63 @@ This solves an apparently simple problem: If I have a rectangle of arbitrary siz
 
 ## bmfont
 
-Raw data structures and parser for the XML form of Angelcode's BMFont library. This does not do the rendering, it just gives you something that you can process into your own renderer's format.
+Raw data structures and parser for the XML form of Angelcode's BMFont library. 
+
+### BMFont.hx
+
+Basic file loading functionality. You can process this into your own renderer's format.
+
+### BMFontRenderPage.hx
+
+A state machine style rendering system. The template type T contains formatted image data in your API or framework - the classes themselves do not use require this data.
+
+Use BMFontWriter.begin(), write(), and end() to write character data into a buffer. Loop over the results in "buf" and "pg" to draw final output. breakLine() and wrap() if you need to format a paragraph.
+
+Example:
+
+```Haxe
+
+// (using Kha framework abstractions)
+
+var bf = BMFont.parse(bmfont_xml)[0];
+var bfmap = new Map<String, BMFontRenderPage<Image>>();
+
+for (page in bf.page) {
+    var rp = new BMFontRenderPage<Image>(page);
+    // fix path
+    var p = page.file;
+	p = StringTools.replace(p, ".png", "");
+	p = StringTools.replace(p, ".", "_");
+	var slash = p.lastIndexOf("/");
+	if (slash >= 0)
+		p = p.substr(slash, p.length);
+	// async load the actual image
+    var fload = (Reflect.field(Assets.images, p + "Load"));
+    fload(function(r){rp.image = r;});
+    bfmap.set(page.file, rp);
+}
+
+// ... after loading, render:
+
+var bmfr = new BMFontRenderable(bf, bfmap);
+
+var fw = new BMFontWriter();
+fw.begin(bmfr, 0., 0.);
+var testtext = "Hello World!";
+fw.wrap(BMFontWriter.breakLine(testtext, true), 300.);
+fw.end();
+fw.translateTopLeft(64, 32);
+		
+for (cidx in 0...fw.len) {
+	var bufi = fw.bufpos(cidx);
+	framebuffer.g2.drawScaledSubImage(
+		fw.font.page[fw.pg[cidx]].image, 
+		fw.buf[bufi], fw.buf[bufi+1], 
+		fw.buf[bufi+2], fw.buf[bufi+3], 
+		fw.buf[bufi+4], fw.buf[bufi+5], 
+		fw.buf[bufi+6], fw.buf[bufi+7]);
+}
+```
 
 ## contrig
 
