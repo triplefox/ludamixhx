@@ -38,18 +38,19 @@ class BMFontRenderable<T> {
 /* Holds a state buffer for writing with a BMFont. */
 class BMFontWriter<T> {
 	
-	public var MAX_CHARS = 2048; // 68 bytes per character
+	public var MAX_CHARS = 2048; // 72 bytes per character
 
 	public function new(?max_chars = 2048) {
 		writing = false;
 		this.MAX_CHARS = max_chars;
 		buf = new Vector(MAX_CHARS*8);
 		pg = new Vector(MAX_CHARS);
+		fn = new Vector(MAX_CHARS);
 	}
 	
 	// internal variables
 	public var writing : Bool; // am writing?
-	public var font : BMFontRenderable<T>; 
+	public var font : Array<BMFontRenderable<T>>;
 	public var last_chr : Int; // last char written
 	public var ox : Float; // origin (cursor) x
 	public var oy : Float; // origin (cursor) y
@@ -58,17 +59,20 @@ class BMFontWriter<T> {
 	
 	// read variables
 	public var buf : Vector<Float>; // variable vector
-	public var pg : Vector<Int>; // page
+	public var pg : Vector<Int>; // page (per char)
+	public var fn : Vector<Int>; // font (per char)
+	public var curfn : Int; // current font
 	public var left : Float; // extent left
 	public var top : Float; // extent top
 	public var right : Float; // extent right
 	public var bottom : Float; // extent bottom
 	public var len : Int; // number of chars written
 	
-	public function begin(font, x, y) {
+	public function begin(font, curfn, x, y) {
 		if (writing) throw 'writer is still writing';
 		writing = true;
 		this.font = font;
+        this.curfn = curfn;
 		last_chr = -1;
 		this.ox = x;
 		this.oy = y;
@@ -76,10 +80,10 @@ class BMFontWriter<T> {
 		this.by = y;
 		// the initial size is "unknown", so we use
 		// values that will definitely be overwritten
-		this.left = x + this.font.font.common.scaleW;
-		this.top = y + this.font.font.common.scaleH;
-		this.right = x - this.font.font.common.scaleW;
-		this.bottom = y - this.font.font.common.scaleH;
+		this.left = x + this.font[curfn].font.common.scaleW;
+		this.top = y + this.font[curfn].font.common.scaleH;
+		this.right = x - this.font[curfn].font.common.scaleW;
+		this.bottom = y - this.font[curfn].font.common.scaleH;
 		len = 0;
 	}
 	
@@ -94,7 +98,7 @@ class BMFontWriter<T> {
 	
 	public inline function lineAdvance() {
 		resetHoriz();
-		oy += font.font.common.lineHeight;
+		oy += font[curfn].font.common.lineHeight;
 	}
 	
 	public inline function end() {
@@ -133,10 +137,10 @@ class BMFontWriter<T> {
 	
 	public inline function write(ch : Int) {
 		if (!writing) throw 'writer is not writing';
-		var chd = font.char.get(ch);
+		var chd = font[curfn].char.get(ch);
 		if (chd != null && len < MAX_CHARS) {
 			// add kerning
-			ox += font.kerning.getiii(last_chr, ch, 0);
+			ox += font[curfn].kerning.getiii(last_chr, ch, 0);
 			// set values to new character
 			var bi = len << 3;
 			buf[bi] = chd.x;
@@ -148,6 +152,7 @@ class BMFontWriter<T> {
 			buf[bi+6] = chd.width;
 			buf[bi+7] = chd.height;
 			pg[len] = chd.page;
+			fn[len] = chd.curfn;
 			// calc extents
 			var cleft = buf[bi + 4];
 			var cright = cleft + buf[bi+6];

@@ -66,7 +66,7 @@ for (page in bf.page) {
 var bmfr = new BMFontRenderable(bf, bfmap);
 
 var fw = new BMFontWriter();
-fw.begin(bmfr, 0., 0.);
+fw.begin([bmfr], 0, 0., 0.);
 var testtext = "Hello World!";
 fw.wrap(BMFontWriter.breakLine(testtext, true), 300.);
 fw.end();
@@ -75,7 +75,7 @@ fw.translateTopLeft(64, 32);
 for (cidx in 0...fw.len) {
 	var bufi = fw.bufpos(cidx);
 	framebuffer.g2.drawScaledSubImage(
-		fw.font.page[fw.pg[cidx]].image, 
+		fw.font[fw.fn[cidx]].page[fw.pg[cidx]].image, 
 		fw.buf[bufi], fw.buf[bufi+1], 
 		fw.buf[bufi+2], fw.buf[bufi+3], 
 		fw.buf[bufi+4], fw.buf[bufi+5], 
