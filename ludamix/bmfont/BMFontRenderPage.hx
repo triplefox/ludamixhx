@@ -152,7 +152,7 @@ class BMFontWriter<T> {
 			buf[bi+6] = chd.width;
 			buf[bi+7] = chd.height;
 			pg[len] = chd.page;
-			fn[len] = chd.curfn;
+			fn[len] = curfn;
 			// calc extents
 			var cleft = buf[bi + 4];
 			var cright = cleft + buf[bi+6];
@@ -177,8 +177,8 @@ class BMFontWriter<T> {
 		if (keep_existing_breaks) {
 			for (n in s.split("\n")) {
 				var tok = "";
-				for (idx in 0...s.length) {
-					var c0 = s.charAt(idx);
+				for (idx in 0...n.length) {
+					var c0 = n.charAt(idx);
 					if (c0==" ")
 					{
 						if (tok.length > 0) {
