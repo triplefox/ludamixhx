@@ -124,4 +124,43 @@ class Log {
         return '${v1s(position)}';
     }
 	
+	public static function parse(doc : Xml) : Log {
+		if (doc.nodeName != "log") {
+			throw "xml element is not a <log>";
+		} else {
+			var l = new Log();
+			for (e in doc.elements()) {				
+				switch(e.nodeName) {
+					case "str": 
+						l.addString(e.firstChild().nodeValue);
+					case "dat":
+						var sp = e.firstChild().nodeValue.split(" "); 
+						l.log(
+							Std.parseInt(sp[0]),
+							Std.parseInt(sp[1]),
+							Std.parseInt(sp[2]),
+							Std.parseInt(sp[3])
+						);
+				}
+			}			
+			return l;
+		}
+	}
+	
+	public function serialize() : Xml {
+		var doc = Xml.createElement("log");
+		for (s in strings) {
+			var e = Xml.createElement("str");
+			e.addChild(Xml.createPCData(s));
+			doc.addChild(e);
+		}
+		for (i in 0...position) {
+			var e = Xml.createElement("dat");
+			var s = '${time(i)} ${type(i)} ${v0(i)} ${v1(i)}';
+			e.addChild(Xml.createPCData(s));
+			doc.addChild(e);
+		}
+		return doc;
+	}
+	
 }
