@@ -104,5 +104,25 @@ class Contrig {
 		return analog.get(name)[axis];
 	}
 	
+	public function copyUpdates(dest : Contrig) {
+		for (k in digital.keys()) {
+			if (dest.digital.exists(k))
+				dest.digital.set(k, digital.get(k));
+		}
+		for (k in analog.keys()) {
+			if (dest.analog.exists(k))
+				dest.analog.set(k, analog.get(k));
+		}
+	}
+	
+	public function copyDefinitions(dest : Contrig) {
+		for (k in digital.keys()) {
+			dest.digital.set(k, digital.get(k));
+		}
+		for (k in analog.keys()) {
+			dest.analog.set(k, analog.get(k));
+		}
+	}
+	
 }
 
