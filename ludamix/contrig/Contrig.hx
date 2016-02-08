@@ -111,7 +111,7 @@ class Contrig {
 		}
 		for (k in analog.keys()) {
 			if (dest.analog.exists(k))
-				dest.analog.set(k, analog.get(k));
+				dest.analog.set(k, analog.get(k).copy());
 		}
 	}
 	
@@ -120,7 +120,7 @@ class Contrig {
 			dest.digital.set(k, digital.get(k));
 		}
 		for (k in analog.keys()) {
-			dest.analog.set(k, analog.get(k));
+			dest.analog.set(k, analog.get(k).copy());
 		}
 	}
 	
