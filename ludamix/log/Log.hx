@@ -163,4 +163,14 @@ class Log {
 		return doc;
 	}
 	
+	public function copy() {
+		var l = new Log();
+		l.strings = this.strings.copy();
+		for (k in this.stringmap.keys())
+			l.stringmap.set(k, this.stringmap.get(k));
+		l.data = this.data.copy();
+		l.position = this.position;
+		return l;
+	}
+	
 }

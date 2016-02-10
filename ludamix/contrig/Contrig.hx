@@ -89,15 +89,18 @@ class Contrig {
 	}
 	
 	public inline function setDown(name : String) {
-		digital.set(name, TrigState.TAP);
+		if (digital.exists(name))
+			digital.set(name, TrigState.TAP);
 	}
 	
 	public inline function setUp(name : String) {
-		digital.set(name, TrigState.RELEASE);
+		if (digital.exists(name))
+			digital.set(name, TrigState.RELEASE);
 	}
 	
 	public inline function setAnalog(name : String, axis : Int, value : Int) {
-		analog.get(name)[axis] = value;
+		if (analog.exists(name))
+			analog.get(name)[axis] = value;
 	}
 	
 	public inline function getAnalog(name : String, axis : Int, value : Int) {
