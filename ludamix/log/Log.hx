@@ -168,7 +168,10 @@ class Log {
 		l.strings = this.strings.copy();
 		for (k in this.stringmap.keys())
 			l.stringmap.set(k, this.stringmap.get(k));
-		l.data = this.data.copy();
+		{ // copy
+			l.data = new Vector(this.data.length);
+			Vector.blit(this.data, 0, l.data, 0, this.data.length);
+		}
 		l.position = this.position;
 		return l;
 	}
