@@ -1,4 +1,5 @@
 package ludamix;
+import haxe.ds.Vector;
 
 class GrowVector4<T> {
 	public var d : Vector<T>;
