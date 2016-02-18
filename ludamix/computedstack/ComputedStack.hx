@@ -1,5 +1,6 @@
 package ludamix.computedstack;
 import ludamix.GrowVector8;
+import haxe.ds.Vector;
 
 class ComputedStack {
 	
