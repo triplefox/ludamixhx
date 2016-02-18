@@ -26,6 +26,6 @@ enum ComputedStackOpcode {
 	DefaultAddInt2; // i, v
 	DefaultAddFloat; // i, f
 	DefaultMulFloat; // i, f
-	EmitComputedState; // i (protocol)
+	Emit; // i (protocol)
 }
 

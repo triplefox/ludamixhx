@@ -15,6 +15,10 @@ When attempting to make garbage-collected code useful for soft real-time applica
 * Data-in-vector: The class treats a large numeric Vector as multiple instances of a more complex record type, avoiding indirection and tracing costs.
 * Object pool: Many of the same object are held in a container and toggled on and off as necessary to avoid "thrashing" in the garbage collector.
 
+## GrowVector1, GrowVector2, GrowVector3, GrowVector4, GrowVector8
+
+These are Vector wrappers that contain an additional length, an automatic (doubling) resize, a reader pointer, and a "struct size" according to the number(1,2,3,4,8) making it easy to bundle multiple values per index.
+
 ## Grid.hx
 
 A 1-dimensional abstraction for storing 2-dimensional tilemap data. It assumes tiles are integers.
@@ -82,6 +86,12 @@ for (cidx in 0...fw.len) {
 		fw.buf[bufi+6], fw.buf[bufi+7]);
 }
 ```
+
+## computedstack
+
+This implements a stack of multiple customized vector data structures. This is not a traditional CS-style stack; when we push the stack, each of the vectors has different behavior - some may copy the previous value, others use default value. Further, some of them have "computed" forms, where the stack data is added or multiplied together. This allows them to act "as one" in representing a larger state machine, with hierarchical data, but without requiring explicit traversal of a hierarchy.
+
+The specific purpose of the stack, and the structures it contains, is to give an immediate-mode form to code traditionally implemented with retained-mode graphs - for example, a 3D scene or a user interface. ComputedStackOperation gives a template for programming with ComputedStack - create a structure with the opcodes and then run the corresponding functions to generate your stack data. When you want to output something interesting, use the Emit opcode and give it a "protocol" index. Then your processor is free to decide how it wants to use the current state of the stack.
 
 ## contrig
 
