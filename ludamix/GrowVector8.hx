@@ -18,15 +18,15 @@ class GrowVector8<T> {
 			}
 			d = nd;
 		}
-		d[l * 4] = v0;
-		d[(l * 4) + 1] = v1;
-		d[(l * 4) + 2] = v2;
-		d[(l * 4) + 3] = v3;
-		d[(l * 4) + 4] = v4;
-		d[(l * 4) + 5] = v5;
-		d[(l * 4) + 6] = v6;
-		d[(l * 4) + 7] = v7;
-		l + 1;
+		d[l * 8] = v0;
+		d[(l * 8) + 1] = v1;
+		d[(l * 8) + 2] = v2;
+		d[(l * 8) + 3] = v3;
+		d[(l * 8) + 4] = v4;
+		d[(l * 8) + 5] = v5;
+		d[(l * 8) + 6] = v6;
+		d[(l * 8) + 7] = v7;
+		l += 1;
 	}
 	public inline function get(i0 : Int, i1 : Int) 
 		{ return d[(i0 * 8) + i1]; }
@@ -34,14 +34,14 @@ class GrowVector8<T> {
 		return l * 8;
 	}
 	public inline function set(i : Int, v0 : T, v1 : T, v2 : T, v3 : T, v4 : T, v5 : T, v6 : T, v7 : T) {
-		d[i * 4] = v0; 
-		d[1 + (i * 4)] = v1; 
-		d[2 + (i * 4)] = v2; 
-		d[3 + (i * 4)] = v3; 
-		d[4 + (i * 4)] = v4; 
-		d[5 + (i * 4)] = v5; 
-		d[6 + (i * 4)] = v6; 
-		d[7 + (i * 4)] = v7; 
+		d[i * 8] = v0; 
+		d[1 + (i * 8)] = v1; 
+		d[2 + (i * 8)] = v2; 
+		d[3 + (i * 8)] = v3; 
+		d[4 + (i * 8)] = v4; 
+		d[5 + (i * 8)] = v5; 
+		d[6 + (i * 8)] = v6; 
+		d[7 + (i * 8)] = v7; 
 	}
 	public inline function setidx(i0 : Int, i1 : Int, v : T) {
 		d[i1 + (i0 * 8)] = v; 

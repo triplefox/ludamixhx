@@ -22,7 +22,7 @@ class GrowVector4<T> {
 		d[(l * 4) + 1] = v1;
 		d[(l * 4) + 2] = v2;
 		d[(l * 4) + 3] = v3;
-		l + 1;
+		l += 1;
 	}
 	public inline function get(i0 : Int, i1 : Int) 
 		{ return d[(i0 * 4) + i1]; }

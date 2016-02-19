@@ -20,7 +20,7 @@ class GrowVector2<T> {
 		}
 		d[l * 2] = v0;
 		d[(l * 2) + 1] = v1;
-		l + 1;
+		l += 1;
 	}
 	public inline function get(i0 : Int, i1 : Int) 
 		{ return d[(i0 * 2) + i1]; }

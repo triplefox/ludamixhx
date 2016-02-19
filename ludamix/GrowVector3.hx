@@ -21,7 +21,7 @@ class GrowVector3<T> {
 		d[l * 3] = v0;
 		d[(l * 3) + 1] = v1;
 		d[(l * 3) + 2] = v2;
-		l + 1;
+		l += 1;
 	}
 	public inline function get(i0 : Int, i1 : Int) 
 		{ return d[(i0 * 3) + i1]; }
