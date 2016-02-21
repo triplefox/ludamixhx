@@ -89,9 +89,7 @@ for (cidx in 0...fw.len) {
 
 ## computedstack
 
-This implements a stack of multiple customized vector data structures. This is not a traditional CS-style stack; when we push the stack, each of the vectors has different behavior - some may copy the previous value, others use default value. Further, some of them have "computed" forms, where the stack data is added or multiplied together. This allows them to act "as one" in representing a larger state machine, with hierarchical data, but without requiring explicit traversal of a hierarchy.
-
-The specific purpose of the stack, and the structures it contains, is to give an immediate-mode form to code traditionally implemented with retained-mode graphs - for example, a 3D scene or a user interface. ComputedStackOperation gives a template for programming with ComputedStack - create a structure with the opcodes and then run the corresponding functions to generate your stack data. When you want to output something interesting, use the Emit opcode and give it a "protocol" index. Then your processor is free to decide how it wants to use the current state of the stack.
+This implements a stack of multiple customized vector data structures on top of GrowVector. For example, if you want to have a sum of integers or an exponentiation of floats, but want to abstract it so that you are only "working with" the last element of the list(e.g. hierarchy of positioning data).
 
 ## contrig
 
