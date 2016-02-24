@@ -12,20 +12,22 @@ class ComputedStackMulFloat2 {
 	public var computed = new Vector<Float>(2);
 	public var default_data = new Vector<Float>(2);
 	
-	public var i : Int = 0;
+	public var i : Int = -1;
 	
 	public function new() {
 	}
 	
 	public inline function push() {
-		d.push(default_data[0],default_data[1]);
+		d.push(default_data[0], default_data[1]);
 		i += 1;
+		dirty = true;
 	}
 	
 	public inline function pop() {
-		if (i < 1) throw "ComputedStackMul: stack underflow";
+		if (i < 0) throw "ComputedStackMul: stack underflow";
 		d.l -= 1;
 		i -= 1;
+		dirty = true;
 	}
 	
 	public inline function set(v0, v1) {
@@ -35,9 +37,9 @@ class ComputedStackMulFloat2 {
 		d.setidx(i, idx, v); dirty = true;
 	}
 	public inline function recompute() {
-		computed[0] = default_data[0];
-		computed[1] = default_data[1];
-		for (n in 0...i) {
+		computed[0] = d.get(0, 0);
+		computed[1] = d.get(0, 1);
+		for (n in 1...(i+1)) {
 			computed[0] *= d.get(n, 0);
 			computed[1] *= d.get(n, 1);
 		}
@@ -49,3 +51,4 @@ class ComputedStackMulFloat2 {
 	}
 	
 }
+
