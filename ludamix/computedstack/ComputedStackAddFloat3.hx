@@ -31,7 +31,7 @@ class ComputedStackAddFloat3 {
 	public inline function set(v0, v1, v2) {
 		d.set(i, v0, v1, v2); dirty = true;
 	}
-	public inline function setIdx(idx, v) {
+	public inline function setidx(idx, v) {
 		d.setidx(i, idx, v); dirty = true;
 	}
 	public inline function recompute() {
