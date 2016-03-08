@@ -39,11 +39,14 @@ class Erec {
 	public var bCR : Int;
 	public var bO : Int;
 	
-	public function new(size, ?unused = -1234) {
+	public var allow_resize : Bool;
+	
+	public function new(size, ?unused = -1234, ?allow_resize = true) {
 		data = new Vector(size * 8);
 		for (n in 0...data.length) data[n] = unused;
 		aptr = 0;
 		this.unused = unused;
+		this.allow_resize = allow_resize;
 		clear();
 	}
 	
@@ -53,7 +56,16 @@ class Erec {
 			aptr = (aptr + 8) % data.length;
 			timeout += 1;
 		}
-		if (timeout >= data.length) throw "erec alloc: timeout";
+		if (timeout >= data.length) {
+			if (allow_resize) {
+				var nd = new Vector<Int>(data.length * 2);
+				for (n in 0...data.length) nd[n] = data[n];
+				data = nd;
+				alloc(type);
+			} else {
+				throw "erec alloc: timeout";
+			}
+		}
 		data[aptr] = type;
 		for (i in 0...7) {
 			data[aptr+i+1] = unused;
