@@ -162,6 +162,14 @@ class Erec {
 			aY > bY + bH - 1
 		);
 	}
+	public inline function intersectPoint(x : Int, y : Int) : Bool {
+		return !(
+			aX + aW - 1 < x ||
+			aY + aH - 1 < y ||
+			aX > x - 1 ||
+			aY > y - 1
+		);
+	}
 	public inline function intersectX() : Bool {
 		return !(
 			aX + aW - 1 < bX ||
@@ -181,6 +189,18 @@ class Erec {
 		var right = aX + aW - 1 < bX + bW - 1 ? aX + aW - 1: bX + bW - 1;
 		var top = aY < bY ? aY : bY;
 		var bottom = aY + aH - 1 < bY + bH - 1 ? aY + aH - 1 : bY + bH - 1;
+		aX = left;
+		aY = top;
+		aW = right - left;
+		aH = bottom - top;
+	}
+	
+	/* set A to the union of A and the given point */
+	public inline function unionPoint(x : Int, y : Int) {
+		var left = aX < x ? aX : y;
+		var right = aX + aW - 1 < x - 1 ? aX + aW - 1: x - 1;
+		var top = aY < y ? aY : y;
+		var bottom = aY + aH - 1 < y - 1 ? aY + aH - 1 : y - 1;
 		aX = left;
 		aY = top;
 		aW = right - left;
