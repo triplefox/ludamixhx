@@ -198,9 +198,9 @@ class Erec {
 	/* set A to the union of A and B */
 	public inline function union() {
 		var left = aX < bX ? aX : bX;
-		var right = aX + aW - 1 < bX + bW - 1 ? aX + aW - 1: bX + bW - 1;
+		var right = aX + aW - 1 > bX + bW - 1 ? aX + aW - 1: bX + bW - 1;
 		var top = aY < bY ? aY : bY;
-		var bottom = aY + aH - 1 < bY + bH - 1 ? aY + aH - 1 : bY + bH - 1;
+		var bottom = aY + aH - 1 > bY + bH - 1 ? aY + aH - 1 : bY + bH - 1;
 		aX = left;
 		aY = top;
 		aW = right - left;
@@ -209,10 +209,12 @@ class Erec {
 	
 	/* set A to the union of A and the given point */
 	public inline function unionPoint(x : Int, y : Int) {
-		var left = aX < x ? aX : y;
-		var right = aX + aW - 1 < x - 1 ? aX + aW - 1: x - 1;
+		var left = aX < x ? aX : x;
+		var right = aX + aW - 1 > x - 1 ? aX + aW - 1: x - 1;
 		var top = aY < y ? aY : y;
-		var bottom = aY + aH - 1 < y - 1 ? aY + aH - 1 : y - 1;
+		var bottom = aY + aH - 1 > y - 1 ? aY + aH - 1 : y - 1;
+		if (left > right) { var t = right; right = left; left = t; }
+		if (top > bottom) { var t = top; top = bottom; bottom = t; }
 		aX = left;
 		aY = top;
 		aW = right - left;
