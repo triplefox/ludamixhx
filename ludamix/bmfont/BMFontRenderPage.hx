@@ -161,7 +161,7 @@ class BMFontWriter<T> {
 			if (cleft < left) left = cleft;
 			if (cright > right) right = cright;
 			if (ctop < top) top = ctop;
-			if (cbottom < bottom) bottom = cbottom;
+			if (cbottom > bottom) bottom = cbottom;
 			// advance
 			last_chr = ch;
 			ox += chd.xadvance;
