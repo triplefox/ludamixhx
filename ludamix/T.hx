@@ -5,6 +5,7 @@ class T /*toolbox*/
 {
 	
 	public static inline var TAU = 6.28318530718;
+	public static inline var EPSILON = 0.0000001;
 	
 	public static inline function lerpF(r0 : Float, r1 : Float, z : Float) : Float { return (r0 + (r1 - r0) * z); }
 	public static inline function lerpI(r0 : Int, r1 : Int, z : Float) : Int { return Std.int(r0 + (r1 - r0) * z); }
@@ -67,5 +68,23 @@ class T /*toolbox*/
 	public static inline function trunc /* truncate float to the amount rounded by the divisor */ (a : Float, div : Float) { return Math.round(a * div) / div; }
 	
 	public static inline function clamp(l : Float, h : Float, v : Float) { return Math.min(h, Math.max(l, v)); }
+
+	public static inline function aabbf(x0 : Float,y0 : Float,
+		w0 : Float,h0 : Float,x1 : Float,y1 : Float,w1 : Float,h1 : Float):Bool {
+		return (!(
+			x0 + w0 - EPSILON < x1 ||
+			y0 + h0 - EPSILON < y1 ||
+			x0 > x1 + w1 - EPSILON ||
+			y0 > y1 + h1 - EPSILON) );
+	}
+
+	public static inline function aabbi(x0 : Int,y0 : Int,
+		w0 : Int,h0 : Int,x1 : Int,y1 : Int,w1 : Int,h1 : Int):Bool {
+		return (!(
+			x0 + w0 - 1 < x1 ||
+			y0 + h0 - 1 < y1 ||
+			x0 > x1 + w1 - 1 ||
+			y0 > y1 + h1 - 1) );
+	}
 	
 }
