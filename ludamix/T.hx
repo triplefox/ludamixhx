@@ -16,27 +16,16 @@ class T /*toolbox*/
 		return (/*offset0*/(z0 - l0) * /*scale*/((/*d0*/h1 - l1)/(/*d1*/h0 - l0)) + l1/*offset1*/);
 	}
 	
+	// difference functions: returns signed values
 	public static inline function rdiff /*rotational diff between [0,lim)*/ (r0 : Float, r1 : Float, lim : Float)
 	{
-		r0 = r0 % lim; r1 = r1 % lim;
-		var d0 = (r1 - r0);
-		var d1 = ((r1 - (r0 + lim)));
-		var d2 = (((r1 + lim) - r0));
-		var ad0 = Math.abs(d0); var ad1 = Math.abs(d1); var ad2 = Math.abs(d2);
-		if (ad0 < ad1)
-		{ 
-			if (ad0 < ad2)
-				return d0;
-			else
-				return d2;
-		}
-		else
-		{
-			if (ad1 < ad2)
-				return d1;
-			else
-				return d2;
-		}
+		var left = modf(r1);
+		var right = left + lim;
+		r0 = modf(r0);
+		if (r0 < left) r0 += lim;
+		var d0 = r0 - left;
+		var d1 = right - r0;
+		return (d0 < d1) ? -d0 : d1;
 	}
 	public static inline function diffRad /* nearest difference in radians */ (r0 : Float, r1 : Float) {
 		return rdiff(r0, r1, TAU);
@@ -86,5 +75,11 @@ class T /*toolbox*/
 			x0 > x1 + w1 - 1 ||
 			y0 > y1 + h1 - 1) );
 	}
+	
+	/* modulus that "circular" wraps to negative values */
+	public static inline function modf(a : Float, b : Float) : Float
+	{ return (b+(a % b)) % b; }
+	public static inline function modi(a : Int, b : Int) : Int {
+	{ return (b+(a % b)) % b; }
 	
 }
