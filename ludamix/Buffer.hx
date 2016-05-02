@@ -1,5 +1,8 @@
 package ludamix;
 
+import haxe.ds.Vector;
+import haxe.macro.Expr;
+
 class Buffer {
 	public var id : Int;
 	public var first : Int;
@@ -10,10 +13,21 @@ class Buffer {
 	public function new() { first = 0; last = 0; chunkfirst = 0; chunklen = 0; }
 }
 
+class AllocatorMacro {
+	public macro static function initialize(allocator:Expr,buffer_id:Expr,
+		buf:String,raw:String,len:String,ptr:String) : Expr {
+        var x0 = macro var $buf = $allocator.buffer.a[$buffer_id];
+		var x1 = macro var $raw = $allocator.rawbuf; 
+		var x2 = macro var $len = buf.length();
+		var x3 = macro var $ptr = buf.first;
+		return macro @:mergeBlock $b{[x0,x1,x2,x3]};
+    }
+}
+
 class BufferAllocatorFloat
 {
 	public function new(slabsize : Int, slabs : Int, padding : Int, zero_data : Float) {
-		buffer = new LifeVector("buffer", [for (i0 in 0...8) new Buffer()]);
+		buffer = new LifeArray("buffer", [for (i0 in 0...8) new Buffer()]);
 		buffer.onExhausted = function(a0) { /* double */
 			var l0 = a0.a.length; for (i0 in 0...l0) 
 			{
@@ -37,7 +51,7 @@ class BufferAllocatorFloat
 		alloc_ptr = 0;
 	}
 	
-	public var buffer : LifeVector<Buffer>;
+	public var buffer : LifeArray<Buffer>;
 	public var rawbuf : Vector<Float>;
 	public var zero_data : Float;
 	public var slaballoc : Array<Bool>;
@@ -83,7 +97,7 @@ class BufferAllocatorFloat
 				obj.first = atSlab(i0);
 				obj.last = obj.first + size;
 				alloc_ptr = (i0 + c0 + 1) % slaballoc.length;
-				return obj.id;
+				return obj;
 			}
 		}
 		/* overrun: allocate double the memory */
@@ -113,7 +127,7 @@ class BufferAllocatorFloat
 class BufferAllocatorInt
 {
 	public function new(slabsize : Int, slabs : Int, padding : Int, zero_data : Int) {
-		buffer = new LifeVector("buffer", [for (i0 in 0...8) new Buffer()]);
+		buffer = new LifeArray("buffer", [for (i0 in 0...8) new Buffer()]);
 		buffer.onExhausted = function(a0) { /* double */
 			var l0 = a0.a.length; for (i0 in 0...l0) 
 			{
@@ -136,7 +150,7 @@ class BufferAllocatorInt
 		slaballoc = [for (i0 in 0...slabsize) false];
 	}
 	
-	public var buffer : LifeVector<Buffer>;
+	public var buffer : LifeArray<Buffer>;
 	public var rawbuf : Vector<Int>;
 	public var zero_data : Int;
 	public var slaballoc : Array<Bool>;
@@ -180,7 +194,7 @@ class BufferAllocatorInt
 				zero(atSlab(i0), s0);
 				obj.first = atSlab(i0);
 				obj.last = obj.first + size;
-				return obj.id;
+				return obj;
 			}
 		}
 		/* overrun: allocate double the memory */
@@ -209,11 +223,55 @@ class BufferAllocatorInt
 
 class BufferStackFloat {
 	
-	public var bufs : GrowVector8<Int>;
+	public var data : GrowVector1<Int>;
 	public var alloc : BufferAllocatorFloat;
-	public var len : Int;
 	
-	/* idea is to have handles to the buffer ids 
-	*/
+	public function new(alloc) {
+		this.alloc = alloc;
+		data = new GrowVector1(1);
+	}
+	
+	public inline function push(size : Int) : Buffer {
+		var buf = alloc.allocBuffer(size);
+		data.push(buf.id);
+		return buf;
+	}
+	
+	public inline function pop() : Buffer {
+		data.l -= 1;
+		return read(0);
+	}
+	
+	public inline function read(down : Int) : Buffer {
+		return (data.l-down > 0) ? alloc.buffer.a[data.get(data.l-1-down)] : null;
+	}
+	
+}
+
+class BufferStackInt {
+	
+	public var data : GrowVector1<Int>;
+	public var alloc : BufferAllocatorInt;
+	
+	public function new(alloc) {
+		this.alloc = alloc;
+		data = new GrowVector1(1);
+	}
+	
+	public inline function push(size : Int) : Buffer {
+		var buf = alloc.allocBuffer(size);
+		data.push(buf.id);
+		return buf;
+	}
+	
+	public inline function pop() : Buffer {
+		alloc.freeBuffer(read(0).id);
+		data.l -= 1;
+		return read(0);
+	}
+	
+	public inline function read(down : Int) : Buffer {
+		return (data.l-down > 0) ? alloc.buffer.a[data.get(data.l-1-down)] : null;
+	}
 	
 }

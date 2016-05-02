@@ -19,9 +19,9 @@ class T /*toolbox*/
 	// difference functions: returns signed values
 	public static inline function rdiff /*rotational diff between [0,lim)*/ (r0 : Float, r1 : Float, lim : Float)
 	{
-		var left = modf(r1);
+		var left = modf(r1, lim);
 		var right = left + lim;
-		r0 = modf(r0);
+		r0 = modf(r0, lim);
 		if (r0 < left) r0 += lim;
 		var d0 = r0 - left;
 		var d1 = right - r0;
@@ -79,7 +79,7 @@ class T /*toolbox*/
 	/* modulus that "circular" wraps to negative values */
 	public static inline function modf(a : Float, b : Float) : Float
 	{ return (b+(a % b)) % b; }
-	public static inline function modi(a : Int, b : Int) : Int {
+	public static inline function modi(a : Int, b : Int) : Int
 	{ return (b+(a % b)) % b; }
 	
 }

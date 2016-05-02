@@ -7,7 +7,7 @@ class LifeArray<T> implements Lifetime
 	/* Manages the lifetimes of statically allocated objects in an array container. */
 	
 	public var a : Array<T>; /* array */
-	public var z : Vector<Bool>; /* alive */
+	public var z : Array<Bool>; /* alive */
 	public var c : Int; /* spawn count */
 	public var name : String; /* name */
 	public var attribute : Int; /* attribute */
@@ -19,7 +19,7 @@ class LifeArray<T> implements Lifetime
 	{
 		a = origin;
 		c = 0;
-		z = Vector.fromArrayCopy([for (n0 in a) false]);
+		z = [for (n0 in a) false];
 		this.name = name;
 	}
 	
