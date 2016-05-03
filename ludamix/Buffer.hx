@@ -9,8 +9,8 @@ class Buffer {
 	public var last : Int;
 	public var chunkfirst : Int;
 	public var chunklen : Int;
-	public function length() { return last - first; }
-	public function new() { first = 0; last = 0; chunkfirst = 0; chunklen = 0; }
+	public inline function length() { return last - first; }
+	public inline function new() { first = 0; last = 0; chunkfirst = 0; chunklen = 0; }
 }
 
 class AllocatorMacro {

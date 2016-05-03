@@ -20,11 +20,19 @@ abstract XStoryOp(Int) {
 	public function asInt() : Int { return this; }
 }
 
+class XStoryAsset {
+	public var name : String;
+	public var locals : Int;
+	public var local_default : Int;
+	public var code : Array<Array<Int>>;
+	public inline function new() {}
+}
+
 class XStory {
 	
 	/* cooperative multitasking state machine for "Extendable Story" and "AI" type uses. */
 	
-	public var programs : Array<{name:String,locals:Int,local_default:Int,code:Array<Array<Int>>}>;	
+	public var programs : Array<XStoryAsset>;
 	public var stack : Array<Array<Int>>;
 	public var globals : Vector<Int>;
 	public var runcode : Array<XStory->Int->Array<Int>->Void>;
