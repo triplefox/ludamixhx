@@ -15,6 +15,14 @@ When attempting to make garbage-collected code useful for soft real-time applica
 * Data-in-vector: The class treats a large numeric Vector as multiple instances of a more complex record type, avoiding indirection and tracing costs.
 * Object pool: Many of the same object are held in a container and toggled on and off as necessary to avoid "thrashing" in the garbage collector.
 
+## Buffer
+
+An allocator for Float and Int data that uses a fixed-size slab/pool/chunk approach to memory management. It accommodates allocations of multiple regions as a single buffer, buffers with padding data(very useful for debugging), and additionally has a wrapper to support stacks of data in this system.
+
+## CircularVector1, CircularVector2
+
+Vector wrappers that let you write to and address ring buffers. Good for queues of limited size.
+
 ## GrowVector1, GrowVector2, GrowVector3, GrowVector4, GrowVector8
 
 These are Vector wrappers that contain an additional length, an automatic (doubling) resize, a reader pointer, and a "struct size" according to the number(1,2,3,4,8) making it easy to bundle multiple values per index.
@@ -129,6 +137,10 @@ if (erec.intersect()) erec.pushoutTop();
 
 Graphics Asset Instancing System. This holds an object pool of common renderable positioning data: x, y, z, type, index. It also sorts by z. There are two x and y positions in order to support interpolated rendering.
 
+## kha
+
+These are data structures and rendering abstractions designed specifically for the Kha framework, in 2D drawing situations. I plan to add my whole renderer here at some point, as I find better means of decoupling it.
+
 ## log
 
 A logging tool that efficiently stores events.
@@ -162,6 +174,8 @@ trace(pf.report());
 
 ```
 
-## xstory
+## Ivy
 
-A tiny interpreted state machine, one in a series of such machines that I've developed. It uses a form of cooperative multitasking in which the program can push a stack of additional programs, and runs them bottom-to-top in each pass. This formulation makes the semantics of behavior tree AI available in a form which also neatly collapses down to simple linear "cutscene" type behavior.
+A tiny interpreted state machine, one in a series of such machines that I've developed. It uses a form of cooperative multitasking in which the program can push a stack of additional programs, and runs them bottom-to-top in each pass. This formulation makes the semantics of behavior tree AI available in a form which also neatly collapses down to simple linear "cutscene" type behavior. Ivy supports integer variables 
+
+This will be supplemented with my behavior tree compilation suite soon. I still have some proof work to do before I feel comfortable pushing it to ludamix.
