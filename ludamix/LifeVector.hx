@@ -15,7 +15,7 @@ class LifeVector<T> implements Lifetime
 	public var onDespawn : Int->T->Void;
 	public var onExhausted : LifeVector<T>->Void; /* when alloc fails */
 	
-	public function new(name : String, origin : Vector<T>)
+	public inline function new(name : String, origin : Vector<T>)
 	{
 		a = origin;
 		c = 0;

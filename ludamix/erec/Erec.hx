@@ -41,7 +41,10 @@ class Erec {
 	
 	public var allow_resize : Bool;
 	
-	public function new(size, ?unused = -1234, ?allow_resize = true) {
+	public function new() {
+	}
+
+	public function init(size, ?unused = -1234, ?allow_resize = true) {
 		data = new Vector(size * 8);
 		for (n in 0...data.length) data[n] = unused;
 		aptr = 0;
@@ -166,6 +169,10 @@ class Erec {
 		return (bCS & aCR != 0);
 	}
 	
+	public function toString() {
+		return ('A: x$aX y$aY w$aW h$aH r${aX+aW-1} b${aY+aH-1} cs$aCS cr$aCR o$aO  B: x$bX y$bY w$bW h$bH r${bX+bW-1} b${bY+bH-1} cs$bCS cr$bCR o$bO');
+	}
+	
 	public inline function intersect() : Bool {
 		return !(
 			aX + aW - 1 < bX ||
@@ -178,8 +185,8 @@ class Erec {
 		return !(
 			aX + aW - 1 < x ||
 			aY + aH - 1 < y ||
-			aX > x - 1 ||
-			aY > y - 1
+			aX > x ||
+			aY > y
 		);
 	}
 	public inline function intersectX() : Bool {
@@ -198,27 +205,26 @@ class Erec {
 	/* set A to the union of A and B */
 	public inline function union() {
 		var left = aX < bX ? aX : bX;
-		var right = aX + aW - 1 > bX + bW - 1 ? aX + aW - 1: bX + bW - 1;
+		var aR = aW > 0 ? aX + aW - 1 : aX;
+		var bR = bW > 0 ? bX + bW - 1 : bX;
+		var right = aR > bR ? aR : bR;
 		var top = aY < bY ? aY : bY;
-		var bottom = aY + aH - 1 > bY + bH - 1 ? aY + aH - 1 : bY + bH - 1;
+		var aB = aH > 0 ? aY + aH - 1 : aY;
+		var bB = bH > 0 ? bY + bH - 1 : bY;
+		var bottom = aB > bB ? aB : bB;
 		aX = left;
 		aY = top;
-		aW = right - left;
-		aH = bottom - top;
+		aW = right - left + 1;
+		aH = bottom - top + 1;
 	}
 	
 	/* set A to the union of A and the given point */
 	public inline function unionPoint(x : Int, y : Int) {
-		var left = aX < x ? aX : x;
-		var right = aX + aW - 1 > x - 1 ? aX + aW - 1: x - 1;
-		var top = aY < y ? aY : y;
-		var bottom = aY + aH - 1 > y - 1 ? aY + aH - 1 : y - 1;
-		if (left > right) { var t = right; right = left; left = t; }
-		if (top > bottom) { var t = top; top = bottom; bottom = t; }
-		aX = left;
-		aY = top;
-		aW = right - left;
-		aH = bottom - top;
+		bX = x;
+		bY = y;
+		bW = 0;
+		bH = 0;
+		union();
 	}
 	
 	/* set A to the pushout of A against B's left side */

@@ -67,6 +67,7 @@ class BMFontWriter<T> {
 	public var right : Float; // extent right
 	public var bottom : Float; // extent bottom
 	public var len : Int; // number of chars written
+	public var lines : Int; // number of lines written
 	
 	public function begin(font, curfn, x, y) {
 		if (writing) throw 'writer is still writing';
@@ -78,6 +79,7 @@ class BMFontWriter<T> {
 		this.oy = y;
 		this.bx = x;
 		this.by = y;
+		this.lines = 1;
 		// the initial size is "unknown", so we use
 		// values that will definitely be overwritten
 		this.left = x + this.font[curfn].font.common.scaleW;
@@ -94,11 +96,13 @@ class BMFontWriter<T> {
 	
 	public inline function resetVert() {
 		oy = by;
+		this.lines = 0;
 	}
 	
 	public inline function lineAdvance() {
 		resetHoriz();
 		oy += font[curfn].font.common.lineHeight;
+		this.lines += 1;
 	}
 	
 	public inline function end() {
@@ -143,25 +147,25 @@ class BMFontWriter<T> {
 			ox += font[curfn].kerning.getiii(last_chr, ch, 0);
 			// set values to new character
 			var bi = len << 3;
+			var destx = ox + chd.xoffset;
+			var desty = oy + chd.yoffset;
+			var destw = chd.width;
+			var desth = chd.height;
 			buf[bi] = chd.x;
 			buf[bi+1] = chd.y;
 			buf[bi+2] = chd.width;
 			buf[bi+3] = chd.height;
-			buf[bi+4] = ox + chd.xoffset;
-			buf[bi+5] = oy + chd.yoffset;
-			buf[bi+6] = chd.width;
-			buf[bi+7] = chd.height;
+			buf[bi+4] = destx;
+			buf[bi+5] = desty;
+			buf[bi+6] = destw;
+			buf[bi+7] = desth;
 			pg[len] = chd.page;
 			fn[len] = curfn;
 			// calc extents
-			var cleft = buf[bi + 4];
-			var cright = cleft + buf[bi+6];
-			var ctop = buf[bi + 5];
-			var cbottom = ctop + buf[bi+7];
-			if (cleft < left) left = cleft;
-			if (cright > right) right = cright;
-			if (ctop < top) top = ctop;
-			if (cbottom > bottom) bottom = cbottom;
+			if (destx < left) left = destx;
+			if (destx + destw > right) right = destx + destw;
+			if (desty < top) top = desty;
+			if (desty + desth > bottom) bottom = desty + desth;
 			// advance
 			last_chr = ch;
 			ox += chd.xadvance;
@@ -218,74 +222,79 @@ class BMFontWriter<T> {
 		return d0;
 	}
 	
+	private inline function expand_rect(a : {top:Float,left:Float,bottom:Float,right:Float}) {
+		if (a.left > left) a.left = left;
+		if (a.right < right) a.right = right;
+		if (a.top > top) a.top = top;
+		if (a.bottom < bottom) a.bottom = bottom;
+	}
+	private inline function reset_origin() {
+		left = ox;
+		right = ox;
+		top = oy;
+		bottom = oy;
+	}
+	private inline function reset_rect(a : {top:Float,left:Float,bottom:Float,right:Float}) {
+		left = a.left;
+		right = a.right;
+		top = a.top;
+		bottom = a.bottom;
+	}
+	
 	/* render a breakLine()'d array with word wrapping. */
-	public function wrap(s : Array<WordWrapData>, width : Float) {
+	public function wrap(s : Array<WordWrapData>, lwidth : Float) {
 		var cw = 0.;
 		var idx = 0;
+		
+		reset_origin();
+		var rect = {top:top,left:left,bottom:bottom,right:right};
+		
 		while (idx < s.length) {
+			if (rect.right - rect.left > lwidth)
+				throw '$idx of $s';
 			var n = s[idx];
-			var prevlen = this.len;
-			var prevtop = this.top;
-			var prevleft = this.left;
-			var prevbottom = this.bottom;
-			var prevright = this.right;
+			var line_start = ox == bx;
 			switch(n) {
 				case WWBreak:
 					lineAdvance();
+					expand_rect(rect);
 				case WWToken(v):
 					var c = 0;
-					while(this.width() <= width && c < v.length) {
+					var word_rect = {top:rect.top,left:rect.left,bottom:rect.bottom,right:rect.right};
+					while(c < v.length) {
 						write(v.charCodeAt(c));
-						c += 1;
-					}
-					// automatic line break
-					if (this.width() > width) {
-						c = 0; // number chars written in this _word_
-						var cw = 0; // number chars written on this _line_
-						if (prevlen > 0)
-							lineAdvance();
-						else
-							resetHoriz();
-						this.left = prevleft;
-						this.top = prevtop;
-						this.bottom = prevbottom;
-						this.right = prevright;
-						this.len = prevlen;
-						// now always write 1 char at a time
-						while(c < v.length) {
-							prevlen = this.len;
-							prevtop = this.top;
-							prevleft = this.left;
-							prevbottom = this.bottom;
-							prevright = this.right;
-							write(v.charCodeAt(c));
-							c += 1;
-							cw += 1;
-							// failsafe split after 1 write
-							if (this.width() > width && cw > 1) {
-								lineAdvance();
-								this.left = prevleft;
-								this.top = prevtop;
-								this.bottom = prevbottom;
-								this.right = prevright;
-								this.len = prevlen;
-								c -= 1;
-								cw = 0;
+						if (this.width() > lwidth) { // back up
+							if (!line_start) { // generous
+								len -= c + 1;
+								c = 0;
+								line_start = true;
+								rect.top = word_rect.top;
+								rect.left = word_rect.left;
+								rect.bottom = word_rect.bottom;
+								rect.right = word_rect.right;
+							} else { // failsafe
+								len -= 1;
 							}
+							reset_rect(rect);
+							lineAdvance();
+							expand_rect(rect);
+						} else {
+							c += 1;
+							expand_rect(rect);
 						}
 					}
 				case WWWhitespace:
-					write(" ".charCodeAt(0));
-					if (this.width() > width) {
+					write(" ".code);
+					if (this.width() > lwidth) {
+						reset_rect(rect);
 						lineAdvance();
-						this.left = prevleft;
-						this.top = prevtop;
-						this.bottom = prevbottom;
-						this.right = prevright;
 					}
+					expand_rect(rect);
 			}
 			idx += 1;
 		}
+		
+		reset_rect(rect);
 	}
 	
 	public function translateTopLeft(x : Float, y : Float) {
@@ -306,7 +315,17 @@ class BMFontWriter<T> {
 		}
 	}
 	
-	public function translateCenter(x, y) {
+	/* centers around the number of lines, line height, and baseline,
+	maintains vertical consistency across multiple bodies of text */
+	public function translateBodyCenter(x, y) {
+		translateTopLeft(x - this.width()/2, 
+		y + (font[curfn].font.common.lineHeight - font[curfn].font.common.base)/2 
+		- (this.lines * font[curfn].font.common.lineHeight)/2);
+	}
+	
+	/* centers around the displayed content which may be a little less
+	than line height */
+	public function translateDisplayCenter(x, y) {
 		translateTopLeft(x - this.width()/2, y - this.height()/2);
 	}
 	

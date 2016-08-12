@@ -1,5 +1,4 @@
 package ludamix;
-import haxe.ds.Vector;
 
 class LifeArray<T> implements Lifetime
 {
@@ -15,7 +14,7 @@ class LifeArray<T> implements Lifetime
 	public var onDespawn : Int->T->Void;
 	public var onExhausted : LifeArray<T>->Void; /* when alloc fails */
 	
-	public function new(name : String, origin : Array<T>)
+	public inline function new(name : String, origin : Array<T>)
 	{
 		a = origin;
 		c = 0;

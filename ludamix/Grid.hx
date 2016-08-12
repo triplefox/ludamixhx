@@ -105,8 +105,11 @@ class Grid
 	{ return it(ui(x, y)); }
 	
 	
-	
-	public function new(width : Int, height : Int, tile_width : Int, tile_height : Int, default_tile : Int,
+	public function new() {
+
+	}
+
+	public function init(width : Int, height : Int, tile_width : Int, tile_height : Int, default_tile : Int,
 		?populate : Array<Int> = null)
 	{
 		this.tile_width = tile_width;
